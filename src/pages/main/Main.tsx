@@ -1,4 +1,6 @@
 import { Layout } from 'antd'
+import { useChartDataContext } from 'app/providers'
+import { Chart } from 'features/chart'
 import FileLoader from 'features/file-loader/ui/FileLoader'
 import styled from 'styled-components'
 
@@ -22,16 +24,19 @@ const StyledFooter = styled(Footer)`
   background-color: var(--color-bg-4);
 `
 
-const MainPage = () => (
-  <StyledLayout>
-    <StyledHeader>
-      <Title>Загрузите .csv файл</Title>
-    </StyledHeader>
-    <Content>
-      <FileLoader />
-    </Content>
-    <StyledFooter>Chumarenko Kirill`s graduate work ©2023 Created by code0_st</StyledFooter>
-  </StyledLayout>
-)
+const MainPage = () => {
+  const { predictSeria, seria, title } = useChartDataContext()
+  return (
+    <StyledLayout>
+      <StyledHeader>
+        <Title>{title || 'Загрузите .csv файл'}</Title>
+      </StyledHeader>
+
+      <Content>{predictSeria.length ? <Chart /> : <FileLoader />}</Content>
+
+      <StyledFooter>Chumarenko Kirill`s graduate work ©2023 Created by code0_st</StyledFooter>
+    </StyledLayout>
+  )
+}
 
 export default MainPage

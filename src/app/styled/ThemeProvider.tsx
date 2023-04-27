@@ -9,7 +9,7 @@ export const ThemeContext = createContext({
 })
 
 type Props = {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 const ThemeProvider: React.FC<Props> = ({ children }) => {
