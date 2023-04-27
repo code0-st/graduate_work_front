@@ -2,11 +2,11 @@ import { createContext, useCallback, useContext, useState } from 'react'
 
 type TChartDataContext = {
   title: string
-  seria: number[]
-  predictSeria: number[]
+  seria: any[][]
+  predictSeria: any[][]
 
-  setDataFromUploadedFile: (title: string, data: number[]) => void
-  setDataFromPrediction: (data: number[]) => void
+  setDataFromUploadedFile: (title: string, data: any[][]) => void
+  setDataFromPrediction: (data: any[][]) => void
 }
 const ChartDataContext = createContext<TChartDataContext>({
   predictSeria: [],
@@ -23,15 +23,15 @@ type Props = {
 }
 export const ChartDataProvider: React.FC<Props> = ({ children }) => {
   const [title, setTitle] = useState<string>('')
-  const [seria, setSeria] = useState<number[]>([])
-  const [predictSeria, setPredictSeria] = useState<number[]>([])
+  const [seria, setSeria] = useState<any[][]>([])
+  const [predictSeria, setPredictSeria] = useState<any[][]>([])
 
-  const setDataFromUploadedFile = useCallback((newTitle: string, newSeria: number[]) => {
+  const setDataFromUploadedFile = useCallback((newTitle: string, newSeria: any[][]) => {
     setTitle(newTitle)
     setSeria(newSeria)
   }, [])
 
-  const setDataFromPrediction = useCallback((newPredictSeria: number[]) => {
+  const setDataFromPrediction = useCallback((newPredictSeria: any[][]) => {
     setPredictSeria(newPredictSeria)
   }, [])
 

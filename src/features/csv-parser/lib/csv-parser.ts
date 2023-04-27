@@ -35,9 +35,9 @@ export class CsvParser {
     return Object.values(this.fileData)
   }
 
-  public valuesWithFilter(filterColumns: string[]): string[][] {
+  public valuesWithFilter(filterColumns: string[]): any {
     return Object.keys(this.fileData)
       .filter((key) => filterColumns.includes(key))
-      .map((key) => this.fileData[key])
+      .map((key) => this.data[key])
   }
 }
