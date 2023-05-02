@@ -113,6 +113,10 @@ const GlobalStyles = createGlobalStyle<{ mode: TMode }>`
     overflow-y: hidden;
 
   }
+
+  .ant-upload-wrapper {
+    flex: auto !important
+  }
 `
 
 export default GlobalStyles

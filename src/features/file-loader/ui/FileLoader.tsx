@@ -1,27 +1,44 @@
 import { InboxOutlined } from '@ant-design/icons'
 import { message, Upload } from 'antd'
 import { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload'
-import { formatStrArrayToArray } from 'app/helpers/json'
 import { useChartDataContext } from 'app/providers'
 import { CsvParser } from 'features/csv-parser'
 import React, { useCallback } from 'react'
 
 const { Dragger } = Upload
 
-const FileLoader: React.FC = () => {
-  const { setDataFromPrediction, setDataFromUploadedFile } = useChartDataContext()
+export type IFile = {
+  uid: string | number
+  lastModified: number
+  lastModifiedDate: string
+  name: string
+  size: number
+  type: string
+  percent?: number
+  originFileObj?: File
+  status?: string
+}
+
+type Props = {
+  onFileLoaded: (file: UploadFile<any>, nextStep?: number) => void
+}
+
+const FileLoader: React.FC<Props> = ({ onFileLoaded }) => {
+  const { setDataFromUploadedFile } = useChartDataContext()
 
   const onChange = useCallback(
     (info: UploadChangeParam<UploadFile<any>>) => {
-      const { response, status } = info.file
+      const { status } = info.file
       if (status === 'done') {
         message.success(`${info.file.name} успешно загружен.`)
-        const fDates = formatStrArrayToArray(response.dates)
-        const fValues = formatStrArrayToArray(response.values)
-        setDataFromPrediction([fDates, fValues])
+        onFileLoaded(info.file, 1)
+      }
+      if (status === 'error') {
+        message.error(`${info.file.name} не был загружен.`)
+        onFileLoaded(info.file, 0)
       }
     },
-    [setDataFromPrediction],
+    [onFileLoaded],
   )
 
   const beforeUploadHandle = useCallback(
@@ -48,14 +65,13 @@ const FileLoader: React.FC = () => {
       beforeUpload={beforeUploadHandle}
       showUploadList={false}
       multiple={false}
+      style={{ flex: 'auto' }}
     >
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>
-      <p className="ant-upload-text">Click or drag file to this area to upload</p>
-      <p className="ant-upload-hint">
-        Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned files.
-      </p>
+      <p className="ant-upload-text">Нажмите или перетащите файл в эту область</p>
+      <p className="ant-upload-hint">Загрузите файл в формате CSV</p>
     </Dragger>
   )
 }

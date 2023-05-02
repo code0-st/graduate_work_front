@@ -1,7 +1,10 @@
 import { Layout } from 'antd'
 import { useChartDataContext } from 'app/providers'
 import { Chart } from 'features/chart'
-import FileLoader from 'features/file-loader/ui/FileLoader'
+import { ConfigForm } from 'features/config-form'
+import { Stepper } from 'features/stepper'
+import { data } from 'features/stepper/lib/data'
+import { useState } from 'react'
 import styled from 'styled-components'
 
 const { Content, Footer, Header } = Layout
@@ -25,14 +28,29 @@ const StyledFooter = styled(Footer)`
 `
 
 const MainPage = () => {
-  const { predictSeria, seria, title } = useChartDataContext()
+  const { predictSeria, title } = useChartDataContext()
+  const [currentStep, setCurrentStep] = useState<number>(0)
+  const [fileName, setFileName] = useState<string>('')
+
   return (
     <StyledLayout>
       <StyledHeader>
         <Title>{title || 'Загрузите .csv файл'}</Title>
       </StyledHeader>
 
-      <Content>{predictSeria.length ? <Chart /> : <FileLoader />}</Content>
+      <Stepper items={data} currentStep={currentStep} onChange={setCurrentStep} />
+
+      <Content>
+        {currentStep < 2 && (
+          <ConfigForm
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            fileName={fileName}
+            setFileName={setFileName}
+          />
+        )}
+        {currentStep == 2 && predictSeria.length && <Chart />}
+      </Content>
 
       <StyledFooter>Chumarenko Kirill`s graduate work ©2023 Created by code0_st</StyledFooter>
     </StyledLayout>
