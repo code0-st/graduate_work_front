@@ -4,15 +4,22 @@ import { Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Too
 
 const Chart: React.FC = () => {
   const { predictSeria, seria } = useChartDataContext()
-
-  const data = seria[0].map((it: string, idx: number) => {
-    const predictValueIndex = predictSeria[0].findIndex((pDate) => pDate === it)
-    return {
-      date: formateDate(it),
-      predictValue: predictValueIndex !== -1 ? predictSeria[1][predictValueIndex] : undefined,
-      value: +seria[1][idx],
-    }
-  })
+  const additionalData = predictSeria[1].slice(predictSeria[0].length)
+  const data = seria[0]
+    .map((it: string, idx: number) => {
+      const predictValueIndex = predictSeria[0].findIndex((pDate) => pDate === it)
+      return {
+        date: formateDate(it),
+        predictValue: predictValueIndex !== -1 ? predictSeria[1][predictValueIndex] : undefined,
+        value: +seria[1][idx],
+      }
+    })
+    .concat(
+      //@ts-ignore
+      additionalData.map((it) => ({
+        predictValue: it,
+      })),
+    )
 
   return (
     <ResponsiveContainer width="100%" height="100%">
