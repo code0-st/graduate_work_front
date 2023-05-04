@@ -1,7 +1,7 @@
 import { Divider, Form, message, UploadFile } from 'antd'
 import { formatStrArrayToArray } from 'app/helpers/json'
-import { useChartDataContext } from 'app/providers'
-import FileLoader from 'features/file-loader/ui/FileLoader'
+import { useChartDataContext, useMetricsContext } from 'app/providers'
+import { FileLoader } from 'features/file-loader'
 import { useState } from 'react'
 import { ButtonElement, InputElement } from 'shared/ui/kit'
 import styled from 'styled-components'
@@ -66,6 +66,7 @@ type Props = {
 const ConfigForm: React.FC<Props> = ({ currentStep, fileName, setCurrentStep, setFileName }) => {
   const [form] = useForm()
   const { setDataFromPrediction } = useChartDataContext()
+  const { setMetrics } = useMetricsContext()
 
   const [isLoading, setLoading] = useState(false)
 
@@ -79,15 +80,17 @@ const ConfigForm: React.FC<Props> = ({ currentStep, fileName, setCurrentStep, se
     const formValues = form.getFieldsValue()
     setLoading(true)
     try {
-      const response: any = await getPrediction({
-        ...formValues,
+      const response = await getPrediction({
+        count: formValues?.count || 0,
         epochs: formValues.epochs || 200,
-        name: fileName,
+        name: fileName || '',
         steps: formValues.steps || 9,
       })
-      const fDates = formatStrArrayToArray(response.data.dates)
-      const fValues = formatStrArrayToArray(response.data.values)
-      setDataFromPrediction([fDates, fValues])
+      const fDates = formatStrArrayToArray(response?.data?.dates)
+      const fValues = formatStrArrayToArray(response?.data?.values)
+      const metrics = response?.data.metrics
+      fDates && fValues && setDataFromPrediction([fDates, fValues])
+      metrics && setMetrics(metrics)
       setCurrentStep(2)
     } catch (e) {
       message.info('Выберите файл!')

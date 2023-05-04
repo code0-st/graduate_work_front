@@ -24,14 +24,12 @@ const Chart: React.FC = () => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
-        width={500}
-        height={300}
         data={data}
         margin={{
-          bottom: 15,
+          bottom: 10,
           left: 30,
           right: 30,
-          top: 15,
+          top: 10,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
@@ -39,8 +37,8 @@ const Chart: React.FC = () => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey="predictValue" stroke="#d44710" activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} isAnimationActive={false} />
+        <Line type="monotone" dataKey="predictValue" stroke="#d44710" activeDot={{ r: 8 }} isAnimationActive={false} />
         <Brush dataKey="date" height={30} stroke="#8884d8" />
       </LineChart>
     </ResponsiveContainer>

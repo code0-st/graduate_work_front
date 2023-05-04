@@ -1,3 +1,4 @@
+import { data } from './lib/data'
 import Stepper from './ui/Stepper'
 
-export { Stepper }
+export { data, Stepper }

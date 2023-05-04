@@ -31,14 +31,17 @@ const dark = css`
 `
 
 const light = css`
-  --color-bg-1: #dfdfdf;
-  --color-bg-2: #ffffff;
-  --color-bg-3: rgba(17, 0, 63, 0.774);
-  --color-bg-4: #dedcdd;
+  --color-bg-1: #ecebf7;
+  --color-bg-2: #f3f2fe;
+  --color-bg-3: #bbbbc4;
+  --color-bg-4: #a9a2f9;
+  --color-bg-5: #514e78;
 
   --color-text-1: #000000;
   --color-text-2: #333333;
   --color-text-3: #4e4d52;
+  --color-text-4: #eeeeee;
+  --color-text-5: #99989f;
 
   --color-purple-light: #4e63d2;
 
