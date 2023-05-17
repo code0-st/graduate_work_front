@@ -2,6 +2,7 @@ import { Layout } from 'antd'
 import { useChartDataContext } from 'app/providers'
 import { Chart } from 'features/chart'
 import { ConfigForm } from 'features/config-form'
+import { ExportExcel } from 'features/export-excel'
 import { Metrics } from 'features/metrics'
 import { data, Stepper } from 'features/stepper'
 import { useState } from 'react'
@@ -31,12 +32,17 @@ const StyledFooter = styled(Footer)`
 `
 
 const StyledSider = styled(Sider)`
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   height: 100vh !important;
   background-color: var(--color-bg-5) !important;
 `
 
 const MainPage = () => {
-  const { predictSeria, title } = useChartDataContext()
+  const { predictSeria, seria, title } = useChartDataContext()
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [fileName, setFileName] = useState<string>('')
 
@@ -62,6 +68,7 @@ const MainPage = () => {
       </Inner>
       <StyledSider>
         <Metrics />
+        <ExportExcel disabled={!seria.length || !predictSeria.length || currentStep !== 2} />
       </StyledSider>
     </Outer>
   )
