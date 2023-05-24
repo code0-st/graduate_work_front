@@ -102,7 +102,7 @@ const ConfigForm: React.FC<Props> = ({ currentStep, fileName, setCurrentStep, se
 
   const onFileLoaded = (file: UploadFile<any>, nextStep?: number) => {
     setFileName(file.name)
-    setCurrentStep(nextStep || 1)
+    setCurrentStep(nextStep === undefined ? 1 : nextStep)
   }
 
   return currentStep === 1 ? (

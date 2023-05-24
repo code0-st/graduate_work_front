@@ -43,6 +43,10 @@ const FileLoader: React.FC<Props> = ({ onFileLoaded }) => {
 
   const beforeUploadHandle = useCallback(
     (file: RcFile) => {
+      if (file.type !== 'text/csv') {
+        message.error('Неверный формат файла')
+        return
+      }
       const reader = new FileReader()
       reader.onload = async ({ target }) => {
         if (target) {
