@@ -1,15 +1,18 @@
+export type CSVSep = ',' | ';'
+
 export class CsvParser {
   private fileName = ''
   private fileData: Record<string, string[]> = {}
   /**
    * fileName - Имя файла
    * fileData - Данные из csv-файла
+   * sep - разделитель
    */
-  constructor(fileName: string, fileData: string) {
+  constructor(fileName: string, fileData: string, sep: CSVSep = ';') {
     this.fileName = fileName
     const splitFileData = fileData.split('\r\n')
-    const head = splitFileData[0].split(',')
-    const splitRows = splitFileData.slice(1, -1).map((row) => row.split(','))
+    const head = splitFileData[0].split(sep)
+    const splitRows = splitFileData.slice(1, -1).map((row) => row.split(sep))
 
     const result: Record<string, string[]> = {}
     head.forEach((value, index) => {
