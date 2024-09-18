@@ -1,8 +1,9 @@
-import { Layout } from 'antd'
+import { Layout, UploadFile } from 'antd'
 import { useChartDataContext } from 'app/providers'
 import { Chart } from 'features/chart'
 import { ConfigForm } from 'features/config-form'
 import { ExportExcel } from 'features/export-excel'
+import { FileLoader } from 'features/file-loader'
 import { Metrics } from 'features/metrics'
 import { data, Stepper } from 'features/stepper'
 import { useState } from 'react'
@@ -46,6 +47,11 @@ const MainPage = () => {
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [fileName, setFileName] = useState<string>('')
 
+  const onFileLoaded = (file: UploadFile<any>, nextStep?: number) => {
+    setFileName(file.name)
+    setCurrentStep(nextStep === undefined ? 1 : nextStep)
+  }
+
   return (
     <Outer>
       <Inner>
@@ -54,7 +60,9 @@ const MainPage = () => {
         </StyledHeader>
         <Stepper items={data} currentStep={currentStep} onChange={setCurrentStep} />
         <Content>
-          {currentStep < 2 && (
+          {currentStep === 0 && <FileLoader onFileLoaded={onFileLoaded} />}
+
+          {currentStep === 1 && (
             <ConfigForm
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
