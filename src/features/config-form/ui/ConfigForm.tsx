@@ -1,14 +1,15 @@
-import { Divider, Form, message, UploadFile } from 'antd'
+import { Divider, Form, message } from 'antd'
 import { formatStrArrayToArray } from 'app/helpers/json'
 import { useChartDataContext, useMetricsContext } from 'app/providers'
-import { FileLoader } from 'features/file-loader'
 import { useState } from 'react'
-import { ButtonElement, InputElement } from 'shared/ui/kit'
+import { ButtonElement, FormItem, SelectElement } from 'shared/ui/kit'
 import styled from 'styled-components'
 
 import { getPrediction } from '../api'
+import { EPredictMethod, PREDICT_METHODS } from '../lib/data'
+import NeuralNetworkConfig from './neural-network-config/NeuralNetworkConfig'
 
-const { Item, useForm } = Form
+const { useForm } = Form
 
 const Outer = styled.div`
   padding: 32px;
@@ -24,28 +25,6 @@ const Inner = styled.div`
   margin: 0px auto;
 `
 
-const StyledItem = styled(Item)`
-  .ant-form-item-required {
-    &::before {
-      content: '' !important;
-      display: none !important;
-    }
-    &::after {
-      width: 100%;
-      content: '*' !important;
-      display: inline-block !important;
-      margin-left: 8px !important;
-      color: var(--color-text-1) !important;
-      font-size: 12px !important;
-      font-family: SimSun, sans-serif !important;
-      line-height: 1 !important;
-    }
-  }
-  .ant-form-item-label > label {
-    color: var(--color-text-1);
-  }
-`
-
 const Footer = styled.div`
   display: flex;
   justify-content: center;
@@ -57,23 +36,27 @@ const Footer = styled.div`
 `
 
 type Props = {
-  currentStep: number
   setCurrentStep: (step: number) => void
   fileName?: string
   setFileName: (name: string) => void
 }
 
-const ConfigForm: React.FC<Props> = ({ currentStep, fileName, setCurrentStep, setFileName }) => {
+const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) => {
   const [form] = useForm()
   const { setDataFromPrediction } = useChartDataContext()
   const { setMetrics } = useMetricsContext()
 
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState<boolean>(false)
+  const [predictMethod, setPredictMethod] = useState<EPredictMethod>(EPredictMethod.NeuralNetwork)
 
   const onCancel = () => {
     setCurrentStep(0)
     setFileName('')
     form.setFields([])
+  }
+
+  const onFieldsChange = (changed: any[]) => {
+    form?.setFields(changed.map((field) => ({ ...field, errors: [] })))
   }
 
   const onFormFinish = async () => {
@@ -102,34 +85,28 @@ const ConfigForm: React.FC<Props> = ({ currentStep, fileName, setCurrentStep, se
 
   return (
     <Outer>
+      <FormItem
+        name={'method'}
+        label={'Выбор метода для прогнозирования временного ряда'}
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+      >
+        <SelectElement
+          value={predictMethod}
+          onChange={setPredictMethod}
+          options={PREDICT_METHODS}
+          placeholder={'Выберите метод'}
+        />
+      </FormItem>
       <Inner>
-        <Form
-          form={form}
-          onFieldsChange={(changed) => {
-            form?.setFields(changed.map((field) => ({ ...field, errors: [] })))
-          }}
-        >
-          <StyledItem name={'steps'} label={'Количество шагов'}>
-            <InputElement
-              placeholder={'Введите количество шагов выборки'}
-              disabled={isLoading}
-              type="number"
-              min={2}
-              defaultValue={9}
-            />
-          </StyledItem>
-          <StyledItem name={'epochs'} label={'Количество эпох обучения'}>
-            <InputElement
-              placeholder={'Введите количество эпох обучения'}
-              disabled={isLoading}
-              type="number"
-              min={1}
-              defaultValue={200}
-            />
-          </StyledItem>
-          <StyledItem name={'count'} label={'Количество прогнозируемых значений'}>
-            <InputElement placeholder={'Введите количество прогнозируемых значений'} disabled={isLoading} min={1} />
-          </StyledItem>
+        <Form form={form} onFieldsChange={onFieldsChange}>
+          {/* TODO: Конфигурации для различных методов при необходимости */}
+          {predictMethod === EPredictMethod.SMA && <div>Метод скользящего среднего</div>}
+          {predictMethod === EPredictMethod.EMA && <div>Экспоненциальное сглаживание</div>}
+          {predictMethod === EPredictMethod.HoltWinters && <div>Метод Хольта-Винтерса</div>}
+          {predictMethod === EPredictMethod.LinearRegression && <div>Линейная регрессия</div>}
+          {predictMethod === EPredictMethod.NeuralNetwork && <NeuralNetworkConfig isLoading={isLoading} />}
+          {predictMethod === EPredictMethod.ARIMA && <div>Авторегрессионное интегрированное скользящее среднее</div>}
         </Form>
       </Inner>
       <Divider />

@@ -63,12 +63,7 @@ const MainPage = () => {
           {currentStep === 0 && <FileLoader onFileLoaded={onFileLoaded} />}
 
           {currentStep === 1 && (
-            <ConfigForm
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              fileName={fileName}
-              setFileName={setFileName}
-            />
+            <ConfigForm setCurrentStep={setCurrentStep} fileName={fileName} setFileName={setFileName} />
           )}
           {currentStep == 2 && predictSeria.length && <Chart />}
         </Content>
