@@ -1,17 +1,20 @@
-import { Metrics } from 'app/providers/metricsProvider/MetricsProvider'
 import axios from 'axios'
 
+import { EPredictMethod } from '../lib/data'
+
 type ConfigDTO = {
-  steps?: number
-  epochs?: number
-  count?: number
   name: string
+  method: EPredictMethod
+
+  window_size?: number
+  alpha?: number
+  seasonal_periods?: number
+  steps?: number
 }
 type ResponseDTO = {
-  dates: string
-  metrics: Metrics
-  status: string
-  values: string
+  status: 'OK'
+  close_values: Array<number>
+  dates_values: Array<number>
 }
 export const getPrediction = async (config: ConfigDTO) => {
   const BASE = 'http://localhost:8080'

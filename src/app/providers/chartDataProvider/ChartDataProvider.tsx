@@ -31,7 +31,7 @@ export const ChartDataProvider: React.FC<Props> = ({ children }) => {
     setSeria(newSeria)
   }, [])
 
-  const setDataFromPrediction = useCallback((newPredictSeria: any[][]) => {
+  const setDataFromPrediction = useCallback((newPredictSeria: (any | undefined)[][]) => {
     setPredictSeria(newPredictSeria)
   }, [])
 

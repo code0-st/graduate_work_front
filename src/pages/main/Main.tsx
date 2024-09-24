@@ -65,7 +65,7 @@ const MainPage = () => {
           {currentStep === 1 && (
             <ConfigForm setCurrentStep={setCurrentStep} fileName={fileName} setFileName={setFileName} />
           )}
-          {currentStep == 2 && predictSeria.length && <Chart />}
+          {currentStep == 2 && <Chart />}
         </Content>
         <StyledFooter>Chumarenko Kirill`s graduate work ©2023 Created by code0_st</StyledFooter>
       </Inner>
