@@ -7,6 +7,10 @@ type TChartDataContext = {
 
   setDataFromUploadedFile: (title: string, data: any[][]) => void
   setDataFromPrediction: (data: any[][]) => void
+
+  newSeria: number[]
+  newPrediction: number[]
+  setPrediction: (a: number[], b: number[]) => void
 }
 const ChartDataContext = createContext<TChartDataContext>({
   predictSeria: [],
@@ -14,6 +18,10 @@ const ChartDataContext = createContext<TChartDataContext>({
   setDataFromPrediction: () => {},
   setDataFromUploadedFile: () => {},
   title: '',
+
+  newSeria: [],
+  newPrediction: [],
+  setPrediction: () => {},
 })
 
 export const useChartDataContext = () => useContext(ChartDataContext)
@@ -26,6 +34,9 @@ export const ChartDataProvider: React.FC<Props> = ({ children }) => {
   const [seria, setSeria] = useState<any[][]>([])
   const [predictSeria, setPredictSeria] = useState<any[][]>([])
 
+  const [newSeria, setNewSeria] = useState<number[]>([])
+  const [newPrediction, setNewPrediction] = useState<number[]>([])
+
   const setDataFromUploadedFile = useCallback((newTitle: string, newSeria: any[][]) => {
     setTitle(newTitle)
     setSeria(newSeria)
@@ -35,8 +46,25 @@ export const ChartDataProvider: React.FC<Props> = ({ children }) => {
     setPredictSeria(newPredictSeria)
   }, [])
 
+  const setPrediction = useCallback((a: number[], b: number[]) => {
+    setNewSeria(a)
+    setNewPrediction(b)
+  }, [])
+
   return (
-    <ChartDataContext.Provider value={{ predictSeria, seria, setDataFromPrediction, setDataFromUploadedFile, title }}>
+    <ChartDataContext.Provider
+      value={{
+        predictSeria,
+        seria,
+        setDataFromPrediction,
+        setDataFromUploadedFile,
+        title,
+
+        newSeria,
+        newPrediction,
+        setPrediction,
+      }}
+    >
       {children}
     </ChartDataContext.Provider>
   )

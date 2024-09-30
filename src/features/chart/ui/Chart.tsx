@@ -3,26 +3,34 @@ import { useChartDataContext } from 'app/providers'
 import { Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 const Chart: React.FC = () => {
-  const { seria } = useChartDataContext()
-  console.log('__TEST__ seria', seria)
+  const { newSeria, newPrediction } = useChartDataContext()
 
-  // const additionalData = predictSeria[1].slice(predictSeria[0].length)
-  const data = seria[0].map((it: string, idx: number) =>
-    // const predictValueIndex = predictSeria[0].findIndex((pDate) => pDate === it)
-    ({
-      date: formateDate(it),
-      // predictValue: predictValueIndex !== -1 ? predictSeria[1][predictValueIndex] : undefined,
-      predictValue: undefined,
-      value: +seria[1][idx],
-    }),
-  )
-  console.log('__TEST__ data', data)
-  // .concat(
-  //   //@ts-ignore
-  //   additionalData.map((it) => ({
-  //     predictValue: it,
-  //   })),
+  console.log(newSeria, newPrediction)
+
+  const data = newSeria.map((it, idx) => ({
+    date: idx,
+    value: it,
+    // TODO: Сейчас 40 данных для обучения
+    predictValue: idx < 39 ? undefined : newPrediction[idx % 40],
+  }))
+
+  // // const additionalData = predictSeria[1].slice(predictSeria[0].length)
+  // const data = seria[0].map((it: string, idx: number) =>
+  //   // const predictValueIndex = predictSeria[0].findIndex((pDate) => pDate === it)
+  //   ({
+  //     date: formateDate(it),
+  //     // predictValue: predictValueIndex !== -1 ? predictSeria[1][predictValueIndex] : undefined,
+  //     predictValue: undefined,
+  //     value: +seria[1][idx],
+  //   }),
   // )
+  // console.log('__TEST__ data', data)
+  // // .concat(
+  // //   //@ts-ignore
+  // //   additionalData.map((it) => ({
+  // //     predictValue: it,
+  // //   })),
+  // // )
 
   return (
     <ResponsiveContainer width="100%" height="100%">

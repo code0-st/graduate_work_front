@@ -47,7 +47,7 @@ type Props = {
 
 const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) => {
   const [form] = useForm()
-  const { setDataFromPrediction } = useChartDataContext()
+  const { setPrediction } = useChartDataContext()
 
   const [isLoading, setLoading] = useState<boolean>(false)
   const [method, setMethod] = useState<EPredictMethod>(EPredictMethod.NeuralNetwork)
@@ -72,7 +72,8 @@ const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) 
         name: fileName,
         ...formValues,
       })
-      // setDataFromPrediction([response?.data?.dates_values, response?.data?.close_values])
+      // @ts-ignore
+      setPrediction(response?.data.real_data, response?.data.predictions)
       setCurrentStep(2)
     } catch (e) {
       message.info('Выберите файл!')
@@ -109,7 +110,7 @@ const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) 
           Отменить
         </ButtonElement>
         <ButtonElement type="primary" onClick={onFormFinish} loading={isLoading}>
-          Обучить
+          Прогноз
         </ButtonElement>
       </Footer>
     </Outer>
