@@ -1,5 +1,5 @@
 import { Divider } from 'antd'
-import { useMetricsContext } from 'app/providers'
+import { useChartDataContext } from 'app/providers'
 import styled from 'styled-components'
 
 import Metric from './Metric'
@@ -17,12 +17,12 @@ const StyledDivider = styled(Divider)`
 `
 
 const Metrics = () => {
-  const metrics = useMetricsContext()
+  const { metrics } = useChartDataContext()
   return (
     <StyledMetricWrapper>
       <StyledDivider />
-      {metrics.metrics ? (
-        Object.entries(metrics.metrics).map(([key, value]) => <Metric key={key} label={key} value={value} />)
+      {metrics ? (
+        Object.entries(metrics).map(([key, value]) => <Metric key={key} label={key} value={value} />)
       ) : (
         <StyledNoData>Метрики не сформированы</StyledNoData>
       )}

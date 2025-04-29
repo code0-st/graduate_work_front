@@ -24,7 +24,7 @@ type Props = {
 }
 
 const FileLoader: React.FC<Props> = ({ onFileLoaded }) => {
-  const { setDataFromUploadedFile } = useChartDataContext()
+  const { setTitle } = useChartDataContext()
 
   const onChange = useCallback(
     (info: UploadChangeParam<UploadFile<any>>) => {
@@ -51,20 +51,20 @@ const FileLoader: React.FC<Props> = ({ onFileLoaded }) => {
       reader.onload = async ({ target }) => {
         if (target) {
           const csvParser = new CsvParser(file.name, target.result as string)
-          const filteredColumns = csvParser.valuesWithFilter(['<DATE>', '<CLOSE>'])
-          setDataFromUploadedFile(csvParser.name, filteredColumns)
+          // const filteredColumns = csvParser.valuesWithFilter(['<DATE>', '<CLOSE>'])
+          setTitle(csvParser.name)
         }
       }
       reader.readAsText(file)
     },
-    [setDataFromUploadedFile],
+    [setTitle],
   )
 
   return (
     <Dragger
       accept=".csv"
-      action="http://localhost:8080/files"
-      name="data"
+      action="http://localhost:8080/upload"
+      name="file"
       onChange={onChange}
       beforeUpload={beforeUploadHandle}
       showUploadList={false}

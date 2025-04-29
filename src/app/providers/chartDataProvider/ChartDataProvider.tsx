@@ -1,27 +1,24 @@
-import { createContext, useCallback, useContext, useState } from 'react'
+import { Metrics, ResponseDTO } from 'features/config-form/api'
+import { createContext, useContext, useState } from 'react'
 
 type TChartDataContext = {
   title: string
-  seria: any[][]
-  predictSeria: any[][]
-
-  setDataFromUploadedFile: (title: string, data: any[][]) => void
-  setDataFromPrediction: (data: any[][]) => void
-
-  newSeria: number[]
-  newPrediction: number[]
-  setPrediction: (a: number[], b: number[]) => void
+  train: Array<number>
+  testTrue: Array<number>
+  testPredicted: Array<number>
+  forecast: Array<number>
+  metrics?: Metrics
+  setPrediction: (value?: ResponseDTO) => void
+  setTitle: (value: string) => void
 }
 const ChartDataContext = createContext<TChartDataContext>({
-  predictSeria: [],
-  seria: [],
-  setDataFromPrediction: () => {},
-  setDataFromUploadedFile: () => {},
+  forecast: [],
+  setPrediction: (value?: ResponseDTO) => {},
+  setTitle: (value) => {},
+  testPredicted: [],
+  testTrue: [],
   title: '',
-
-  newSeria: [],
-  newPrediction: [],
-  setPrediction: () => {},
+  train: [],
 })
 
 export const useChartDataContext = () => useContext(ChartDataContext)
@@ -31,38 +28,37 @@ type Props = {
 }
 export const ChartDataProvider: React.FC<Props> = ({ children }) => {
   const [title, setTitle] = useState<string>('')
-  const [seria, setSeria] = useState<any[][]>([])
-  const [predictSeria, setPredictSeria] = useState<any[][]>([])
 
-  const [newSeria, setNewSeria] = useState<number[]>([])
-  const [newPrediction, setNewPrediction] = useState<number[]>([])
+  const [train, setTrain] = useState<Array<number>>([])
+  const [testTrue, setTestTrue] = useState<Array<number>>([])
+  const [testPredicted, setTestPredicted] = useState<Array<number>>([])
+  const [forecast, setForecast] = useState<Array<number>>([])
+  const [metrics, setMetrics] = useState<Metrics | undefined>()
 
-  const setDataFromUploadedFile = useCallback((newTitle: string, newSeria: any[][]) => {
-    setTitle(newTitle)
-    setSeria(newSeria)
-  }, [])
+  const setPrediction = (predict?: ResponseDTO) => {
+    if (!predict) return
+    setTrain(predict.train)
+    setTestTrue(predict.test_true)
+    setTestPredicted(predict.test_predicted)
+    setForecast(predict.forecast)
+    setMetrics(predict.metrics)
+  }
 
-  const setDataFromPrediction = useCallback((newPredictSeria: (any | undefined)[][]) => {
-    setPredictSeria(newPredictSeria)
-  }, [])
-
-  const setPrediction = useCallback((a: number[], b: number[]) => {
-    setNewSeria(a)
-    setNewPrediction(b)
-  }, [])
+  const setTitleHandle = (value: string) => {
+    setTitle(value)
+  }
 
   return (
     <ChartDataContext.Provider
       value={{
-        predictSeria,
-        seria,
-        setDataFromPrediction,
-        setDataFromUploadedFile,
-        title,
-
-        newSeria,
-        newPrediction,
+        forecast,
+        metrics,
         setPrediction,
+        setTitle: setTitleHandle,
+        testPredicted,
+        testTrue,
+        title,
+        train,
       }}
     >
       {children}

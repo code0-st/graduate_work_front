@@ -1,36 +1,19 @@
-import { formateDate } from 'app/helpers/date'
 import { useChartDataContext } from 'app/providers'
-import { Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { useEffect, useState } from 'react'
+import { Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from 'recharts'
 
 const Chart: React.FC = () => {
-  const { newSeria, newPrediction } = useChartDataContext()
+  const { forecast, testPredicted, testTrue, train } = useChartDataContext()
 
-  console.log(newSeria, newPrediction)
+  const [data, setData] = useState<any[]>([])
 
-  const data = newSeria.map((it, idx) => ({
-    date: idx,
-    value: it,
-    // TODO: Сейчас 40 данных для обучения
-    predictValue: idx < 39 ? undefined : newPrediction[idx % 40],
-  }))
-
-  // // const additionalData = predictSeria[1].slice(predictSeria[0].length)
-  // const data = seria[0].map((it: string, idx: number) =>
-  //   // const predictValueIndex = predictSeria[0].findIndex((pDate) => pDate === it)
-  //   ({
-  //     date: formateDate(it),
-  //     // predictValue: predictValueIndex !== -1 ? predictSeria[1][predictValueIndex] : undefined,
-  //     predictValue: undefined,
-  //     value: +seria[1][idx],
-  //   }),
-  // )
-  // console.log('__TEST__ data', data)
-  // // .concat(
-  // //   //@ts-ignore
-  // //   additionalData.map((it) => ({
-  // //     predictValue: it,
-  // //   })),
-  // // )
+  useEffect(() => {
+    setData([
+      ...train.map((val, idx) => ({ train: val })),
+      ...testTrue.map((val, idx) => ({ testPredicted: testPredicted[idx], testTrue: val })),
+      ...forecast.map((val, idx) => ({ forecast: val })),
+    ])
+  }, [forecast])
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -44,12 +27,41 @@ const Chart: React.FC = () => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} isAnimationActive={false} />
-        <Line type="monotone" dataKey="predictValue" stroke="#d44710" activeDot={{ r: 8 }} isAnimationActive={false} />
+        <Line
+          type="monotone"
+          name="Обучающие данные"
+          dataKey="train"
+          stroke="blue"
+          activeDot={{ r: 8 }}
+          isAnimationActive={false}
+        />
+        <Line
+          type="monotone"
+          name="Тестовые (истинные)"
+          dataKey="testTrue"
+          stroke="green"
+          activeDot={{ r: 8 }}
+          isAnimationActive={false}
+        />
+        <Line
+          type="monotone"
+          name="Тестовые (предсказания)"
+          dataKey="testPredicted"
+          stroke="orange"
+          activeDot={{ r: 8 }}
+          isAnimationActive={false}
+        />
+        <Line
+          type="monotone"
+          name="Прогноз"
+          dataKey="forecast"
+          stroke="red"
+          activeDot={{ r: 8 }}
+          isAnimationActive={false}
+        />
         <Brush dataKey="date" height={30} stroke="#8884d8" />
       </LineChart>
     </ResponsiveContainer>

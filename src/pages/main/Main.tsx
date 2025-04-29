@@ -43,7 +43,7 @@ const StyledSider = styled(Sider)`
 `
 
 const MainPage = () => {
-  const { predictSeria, seria, title } = useChartDataContext()
+  const { title, forecast } = useChartDataContext()
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [fileName, setFileName] = useState<string>('')
 
@@ -71,7 +71,7 @@ const MainPage = () => {
       </Inner>
       <StyledSider>
         <Metrics />
-        <ExportExcel disabled={!seria.length || !predictSeria.length || currentStep !== 2} />
+        <ExportExcel disabled={!forecast.length || currentStep !== 2} />
       </StyledSider>
     </Outer>
   )

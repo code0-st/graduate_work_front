@@ -13,7 +13,6 @@ const SmaConfig: React.FC<Props> = memo(({ isLoading }) => (
         disabled={isLoading}
         type="number"
         min={2}
-        defaultValue={6}
       />
     </FormItem>
   </>

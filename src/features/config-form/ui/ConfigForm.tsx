@@ -1,16 +1,17 @@
-import { Divider, Form, message } from 'antd'
+import { Divider, Form } from 'antd'
 import { useChartDataContext } from 'app/providers'
-import { useState } from 'react'
-import { ButtonElement, FormItem, SelectElement } from 'shared/ui/kit'
+import { useEffect, useRef, useState } from 'react'
+import { ButtonElement, FormItem, InputElement, SelectElement } from 'shared/ui/kit'
 import styled from 'styled-components'
 
 import { getPrediction } from '../api'
-import { EPredictMethod, PREDICT_METHODS } from '../lib/data'
+import { EPredictMethod, FORM_INITIALS, PREDICT_METHODS } from '../lib/data'
 import { parsePropsToNumber } from '../lib/utils'
+import ArimaConfig from './arima-config/ArimaConfig'
 import EmaConfig from './ema-config/EmaConfig'
 import HoltWintersConfig from './holt-winters-config/HoltWintersConfig'
-import LinearRegressionConfig from './linear-regression-config/LinearRegressionConfig'
 import NeuralNetworkConfig from './neural-network-config/NeuralNetworkConfig'
+import SarimaConfig from './sarima-config/SarimaConfig'
 import SmaConfig from './sma-config/SmaConfig'
 
 const { useForm } = Form
@@ -25,7 +26,8 @@ const Outer = styled.div`
 `
 
 const Inner = styled.div`
-  max-width: 50%;
+  width: 100%;
+  max-width: 80%;
   margin: 0px auto;
 `
 
@@ -52,10 +54,25 @@ const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) 
   const [isLoading, setLoading] = useState<boolean>(false)
   const [method, setMethod] = useState<EPredictMethod>(EPredictMethod.NeuralNetwork)
 
+  const controllerRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    const initialValues = FORM_INITIALS[method]
+    form.setFieldsValue(initialValues)
+  }, [method])
+
+  useEffect(
+    () => () => {
+      controllerRef.current?.abort()
+    },
+    [],
+  )
+
   const onCancel = () => {
     setCurrentStep(0)
     setFileName('')
     form.setFields([])
+    controllerRef.current?.abort()
   }
 
   const onFieldsChange = (changed: any[]) => {
@@ -63,21 +80,22 @@ const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) 
   }
 
   const onFormFinish = async () => {
+    controllerRef.current = new AbortController()
     const formValues = parsePropsToNumber(form.getFieldsValue())
-
     setLoading(true)
     try {
-      const response = await getPrediction({
-        method,
-        name: fileName,
-        ...formValues,
-      })
-      // @ts-ignore
-      setPrediction(response?.data.real_data, response?.data.predictions)
+      const response = await getPrediction(
+        {
+          filename: fileName,
+          method,
+          params: formValues,
+        },
+        controllerRef.current?.signal,
+      )
+      setPrediction(response?.data)
       setCurrentStep(2)
     } catch (e) {
-      message.info('Выберите файл!')
-      setCurrentStep(0)
+      console.log(e)
     } finally {
       setLoading(false)
     }
@@ -94,14 +112,35 @@ const ConfigForm: React.FC<Props> = ({ fileName, setCurrentStep, setFileName }) 
       </FormItem>
       <Inner>
         <Form form={form} onFieldsChange={onFieldsChange}>
-          {method === EPredictMethod.SMA && <SmaConfig isLoading={isLoading} />}
+          <FormItem name={'forecast_steps'} label={'Количество шагов прогнозирования'}>
+            <InputElement
+              placeholder={'Введите количество шагов прогнозирования'}
+              disabled={isLoading}
+              type="number"
+              min={0}
+              max={15}
+            />
+          </FormItem>
+
+          <FormItem name={'test_ratio'} label={'Процент под тестовую выборку'}>
+            <InputElement
+              placeholder={'Введите процент под тестовую выборку'}
+              disabled={isLoading}
+              type="number"
+              min={0}
+              max={0.5}
+              step={0.01}
+            />
+          </FormItem>
+
+          {(method === EPredictMethod.SMA || method === EPredictMethod.LinearRegression) && (
+            <SmaConfig isLoading={isLoading} />
+          )}
           {method === EPredictMethod.EMA && <EmaConfig isLoading={isLoading} />}
           {method === EPredictMethod.HoltWinters && <HoltWintersConfig isLoading={isLoading} />}
-          {method === EPredictMethod.LinearRegression && <LinearRegressionConfig isLoading={isLoading} />}
           {method === EPredictMethod.NeuralNetwork && <NeuralNetworkConfig isLoading={isLoading} />}
-
-          {/* TODO: Доделать на беке */}
-          {method === EPredictMethod.ARIMA && <div>В РАЗРАБОТКЕ</div>}
+          {method === EPredictMethod.ARIMA && <ArimaConfig isLoading={isLoading} />}
+          {method === EPredictMethod.SARIMA && <SarimaConfig isLoading={isLoading} />}
         </Form>
       </Inner>
       <Divider />

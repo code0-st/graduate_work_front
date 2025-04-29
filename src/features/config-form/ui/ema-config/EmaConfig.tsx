@@ -7,14 +7,15 @@ type Props = {
 
 const EmaConfig: React.FC<Props> = memo(({ isLoading }) => (
   <>
-    <FormItem name={'alpha'} label={'Коэффициент сглаживания (0 < alpha < 1)'}>
+    <FormItem name={'alpha'} label={'Коэффициент сглаживания'}>
       <InputElement
-        placeholder={'Введите коэффициент сглаживания'}
+        placeholder="Введите коэффициент сглаживания"
+        title="Коэффициент сглаживания (0 < alpha < 1)"
         disabled={isLoading}
         type="number"
         min={0}
         max={1}
-        defaultValue={0.5}
+        step={0.1}
       />
     </FormItem>
   </>

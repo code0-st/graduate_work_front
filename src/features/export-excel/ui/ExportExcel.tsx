@@ -1,5 +1,4 @@
 import { Button } from 'antd'
-import { formateDate } from 'app/helpers/date'
 import { useChartDataContext } from 'app/providers'
 import { useEffect, useState } from 'react'
 import * as XLSX from 'xlsx'
@@ -11,30 +10,19 @@ type Props = {
 }
 
 const ExportExcel = ({ disabled, fileName, sheetName }: Props) => {
-  const { predictSeria, seria } = useChartDataContext()
+  const { forecast, testPredicted, testTrue, train } = useChartDataContext()
+
   const [data, setData] = useState<any[]>([])
 
   useEffect(() => {
-    if (!seria || !seria.length || !predictSeria || !predictSeria.length) return
+    if (!train.length || !testTrue.length || !testPredicted.length || !forecast.length) return
 
-    const additionalData = predictSeria[1].slice(predictSeria[0].length)
-    const dataToSet = seria[0]
-      .map((it: string, idx: number) => {
-        const predictValueIndex = predictSeria[0].findIndex((pDate) => pDate === it)
-        return {
-          date: formateDate(it),
-          predictValue: predictValueIndex !== -1 ? predictSeria[1][predictValueIndex] : undefined,
-          value: +seria[1][idx],
-        }
-      })
-      .concat(
-        //@ts-ignore
-        additionalData.map((it) => ({
-          predictValue: it,
-        })),
-      )
-    setData(dataToSet)
-  }, [seria, predictSeria])
+    setData([
+      ...train.map((val, idx) => ({ train: val })),
+      ...testTrue.map((val, idx) => ({ testPredicted: testPredicted[idx], testTrue: val })),
+      ...forecast.map((val, idx) => ({ forecast: val })),
+    ])
+  }, [forecast])
 
   const handleOnExport = () => {
     const wb = XLSX.utils.book_new()
